@@ -203,7 +203,6 @@ let newMensaje = new mensajesDAO({
 let newProducto = new productosDAO({   
     "title": "Cuaderno de ventas",
     "description": "Para organizarte con cada venta",
-    "code": "VC-CF-M",
     "thumbnail": "https://azafran.mitiendanube.com/productos/cuaderno-de-pedidos2/",
     "price": 1200,
     "stock": 45
