@@ -1,3 +1,5 @@
+//Mensajes/productos/user
+
 //Importar nuestras dependencias
 import mongoose from "mongoose";
 
@@ -140,7 +142,7 @@ const productosDAO = mongoose.model("productos", productosSchema);
 
 
 //Conectar a la base de datos:Ecommerce
-await mongoose.connect("mongodb://127.0.0.1:27017/ecommerce", {
+await mongoose.connect("mongodb://localhost:27017/ecommerce", {
     serverSelectionTimeoutMS:5000, //la conexion persiste hasta que se conecte
 });
 console.log("base de datos conectada");
@@ -177,7 +179,7 @@ if (rejectedProductos.length > 0){
     console.log("Ok!")
 };
 
-
+//Documentos de cada coleccion
 mensajesDAO.countDocuments(function(err, mensajes){
     if (err) return console.error(err);
     console.log(mensajes);
@@ -188,7 +190,12 @@ productosDAO.countDocuments(function(err, productos){
     console.log(productos);
 });
 
-//REALIZAR UN CRUD//listar todos los documentos en cada coleccion//mostrar cantidad de documentos almacenados en cada una de las colecciones
+//REALIZAR UN CRUD
+//Agregar un producto mas en la coleccion producto--
+//Realizar una consulta por nombre especifico
+//mostrar cantidad de documentos almacenados en cada una de las colecciones
+//Hacer una actualizacion
+//Borrar
 
 let newMensaje = new mensajesDAO({
    
@@ -253,24 +260,55 @@ productosDAO.find(function(err, productos){
     console.log(productos);
 });
 
-//
+//Actualizar
 productosDAO.updateMany({price: {$gt: 4000}}, {$set :{stock : 0}}, function(err, productos){
     if (err) return console.error(err);
     console.log(productos)
 });
 
-//
+//Borrar
 productosDAO.deleteMany({price: {$lt: 1000}}, function(err, productos){
     if(err) return console.error(err); 
     console.log(productos);
-})
+});
+//USER QUE LEA LA BASE DE DATOS Y NO PUEDA MODIFICARLA.
+//user : "pepe" clave: "asd456"
 
+const user = [
+    { user: "pepe", pass: "asd456", roles:[{role: "read", db:"productos"}, {role: "read", db:"mensajes"}]}
+];
 
+const userSchema = new mongoose.Schema({
+    user: {type: String, required: true},
+    pass: {type: String, required: true},
+    roles :[{
+        role:{type: String},
+        role: {type: String}
+    }]
+     
+});
 
-//  ME FALTA EL USER QUE LEA LA BASE DE DATOS Y NO PUEDA MODIFICARLA.
+const userDAO = mongoose.model("user", userSchema); 
 
+await mongoose.connect("mongo://localhost/user", {
+        serverSelectionTimeoutMS: 5000,
+});
 
+            console.log("Conectada!")
 
+const insercionesUser = []
 
-//Desconecto:
-await mongoose.disconnect()
+for (const user of users){
+    insercionesUser.push(usersDAO.create(user))
+}
+
+const resultUser = await Promise.allSettled(insercionesUser)
+const rejectedUser = resultUser.filter(r => r.status == "rejected")
+if (rejectedUser.length > 0){
+    console.log("Fallos: " + rejectedUsua.length)
+} else {
+    console.log("Ok!")
+};
+
+await mongoose.disconnect() //Se cierra.
+
